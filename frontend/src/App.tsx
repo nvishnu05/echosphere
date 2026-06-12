@@ -293,18 +293,24 @@ export default function App() {
         }
       }
 
-      // Sync and save final session data to localstorage
-      const finalSessions = sessions.map(s => {
-        if (s.id === activeSessionId) {
-          const msgs = [...s.messages];
-          if (msgs.length > 0 && msgs[msgs.length - 1].sender === 'ai') {
-            msgs[msgs.length - 1].text = streamedResponse;
+      // Sync and save final session data to localstorage using latest state
+      setSessions(prevSessions => {
+        const finalSessions = prevSessions.map(s => {
+          if (s.id === activeSessionId) {
+            const msgs = [...s.messages];
+            if (msgs.length > 0 && msgs[msgs.length - 1].sender === 'ai') {
+              msgs[msgs.length - 1] = {
+                ...msgs[msgs.length - 1],
+                text: streamedResponse
+              };
+            }
+            return { ...s, messages: msgs };
           }
-          return { ...s, messages: msgs };
-        }
-        return s;
+          return s;
+        });
+        localStorage.setItem('gemini-voice-sessions', JSON.stringify(finalSessions));
+        return finalSessions;
       });
-      saveSessionsToStorage(finalSessions);
       setIsLoading(false);
 
       // Play back TTS if enabled

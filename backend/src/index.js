@@ -100,7 +100,8 @@ app.post('/api/chat/stream', async (req, res) => {
       "You are a premium AI voice assistant. " +
       "Since your response will be read aloud, keep answers concise, natural, and conversational (ideally 1-3 sentences). " +
       "Avoid lists, bullet points, asterisks, or markdown formatting, as they disrupt speech synthesis. " +
-      "If the user asks for a detailed explanation, keep it friendly and split information into small readable paragraphs.";
+      "If the user asks for a detailed explanation, keep it friendly and split information into small readable paragraphs. " +
+      `Additionally, the user's current date and time is ${new Date().toLocaleString('en-US')}. Use this to answer queries about today's date, time, or relative schedules.`;
 
     const systemInstructionConfig = systemInstruction || defaultInstruction;
 
