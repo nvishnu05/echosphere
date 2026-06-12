@@ -10,7 +10,7 @@ interface UseSpeechToTextReturn {
   browserSupportsSpeech: boolean;
 }
 
-export const useSpeechToText = (onFinalTranscript?: (text: string) => void): UseSpeechToTextReturn => {
+export const useSpeechToText = (): UseSpeechToTextReturn => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -38,26 +38,11 @@ export const useSpeechToText = (onFinalTranscript?: (text: string) => void): Use
       };
 
       recognition.onresult = (event: any) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
+        let fullTranscript = '';
+        for (let i = 0; i < event.results.length; ++i) {
+          fullTranscript += event.results[i][0].transcript;
         }
-
-        setTranscript(prev => {
-          // If we have final transcript, append it, else show interim
-          const base = finalTranscript ? prev + ' ' + finalTranscript : prev;
-          return (base + ' ' + interimTranscript).trim().replace(/\s+/g, ' ');
-        });
-
-        if (finalTranscript && onFinalTranscript) {
-          onFinalTranscript(finalTranscript.trim());
-        }
+        setTranscript(fullTranscript);
       };
 
       recognition.onerror = (event: any) => {

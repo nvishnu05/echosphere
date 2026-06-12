@@ -35,16 +35,11 @@ export default function App() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const baseInputRef = useRef('');
 
   // Initialize Speech hooks
   const tts = useTextToSpeech(isVoiceEnabled);
-  const stt = useSpeechToText((finalText) => {
-    // When final speech is transcribed, update our text input
-    setInput(prev => {
-      const combined = (prev + ' ' + finalText).trim();
-      return combined;
-    });
-  });
+  const stt = useSpeechToText();
 
   // Check backend configuration status on load
   const checkBackendStatus = async () => {
@@ -105,6 +100,14 @@ export default function App() {
     }
   }, [input]);
 
+  // Sync speech transcript into input area in real-time
+  useEffect(() => {
+    if (stt.isListening) {
+      const base = baseInputRef.current ? baseInputRef.current + ' ' : '';
+      setInput((base + stt.transcript).trim());
+    }
+  }, [stt.transcript, stt.isListening]);
+
   const activeSession = sessions.find(s => s.id === activeSessionId);
 
   const createNewChat = () => {
@@ -163,13 +166,9 @@ export default function App() {
   const toggleMic = () => {
     if (stt.isListening) {
       stt.stopListening();
-      // If there's content, trigger submit
-      if (input.trim() || stt.transcript.trim()) {
-        const textToSubmit = (input + ' ' + stt.transcript).trim();
-        setInput(textToSubmit);
-      }
     } else {
       tts.stop();
+      baseInputRef.current = input;
       stt.startListening();
     }
   };
