@@ -74,6 +74,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (!isAuthorized) return;
     checkBackendStatus();
     
     // Load chat sessions from localStorage
@@ -94,7 +95,7 @@ export default function App() {
     } else {
       createNewChat();
     }
-  }, []);
+  }, [isAuthorized]);
 
   // Sync sessions with LocalStorage
   const saveSessionsToStorage = (updatedSessions: ChatSession[]) => {
