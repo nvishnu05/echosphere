@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Brand color tokens corresponding to Gemini's aesthetic */
+  --color-gemini-blue: #1a73e8;
+  --color-gemini-purple: #8ab4f8;
+  --color-gemini-dark: #0f1015;
+  --color-gemini-card: #1e1f29;
+  
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-breath: breath 2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-slide-up: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-typing: typing 1.4s infinite;
+
+  @keyframes breath {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.15); opacity: 0.9; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes typing {
+    0%, 100% { transform: translateY(0px); opacity: 0.3; }
+    50% { transform: translateY(-6px); opacity: 1; }
+  }
+}
+
+/* Glassmorphism custom classes */
+@utility bg-glass {
+  background-color: rgba(18, 18, 24, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+@utility bg-glass-light {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@utility border-glass {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@utility border-glass-focus {
+  border: 1px solid rgba(138, 180, 248, 0.3);
+}
+
+@utility text-gradient-gemini {
+  background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility bg-gradient-gemini {
+  background: linear-gradient(135deg, #4b5320 0%, #8ab4f8 50%, #d8b4fe 100%);
+}
+
+@utility bg-gradient-premium {
+  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+}
+
+/* Global resets and layouts */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #08070b;
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Custom soundwave animations */
+.sound-bar {
+  transition: height 0.15s ease-in-out;
+}
+
+/* Markdown formatting resets inside messages */
+.ai-message-content p {
+  margin-bottom: 0.75rem;
+}
+.ai-message-content p:last-child {
+  margin-bottom: 0;
+}
+.ai-message-content code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.125rem 0.25rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
