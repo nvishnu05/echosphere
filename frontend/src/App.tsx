@@ -416,7 +416,7 @@ export default function App() {
             </button>
             <div className="flex items-center gap-2">
               <Sparkles size={18} className="text-blue-400 animate-pulse-slow" />
-              <span className="font-semibold text-sm tracking-wide text-white">Gemini 2.5 Flash</span>
+              <span className="font-semibold text-sm tracking-wide text-white">EchoSphere</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 font-medium border border-blue-500/10">
                 Voice Assistant
               </span>

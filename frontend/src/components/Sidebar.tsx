@@ -98,10 +98,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-b border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-400 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">
-            G
+            E
           </div>
           <div>
-            <h1 className="text-sm font-semibold tracking-wide text-white">Gemini Voice AI</h1>
+            <h1 className="text-sm font-semibold tracking-wide text-white">EchoSphere</h1>
             <p className="text-[10px] text-zinc-500 flex items-center gap-1">
               <span className={`w-1.5 h-1.5 rounded-full ${backendConfigured || customApiKey ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
               {backendConfigured ? 'Backend Connected' : customApiKey ? 'Custom API Key active' : 'API Key required'}
