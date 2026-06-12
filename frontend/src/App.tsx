@@ -35,7 +35,7 @@ export default function App() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const baseInputRef = useRef('');
+  const lastToggleTime = useRef(0);
 
   // Initialize Speech hooks
   const tts = useTextToSpeech(isVoiceEnabled);
@@ -100,11 +100,10 @@ export default function App() {
     }
   }, [input]);
 
-  // Sync speech transcript into input area in real-time
+  // Sync speech transcript into input area in real-time directly
   useEffect(() => {
     if (stt.isListening) {
-      const base = baseInputRef.current ? baseInputRef.current + ' ' : '';
-      setInput((base + stt.transcript).trim());
+      setInput(stt.transcript);
     }
   }, [stt.transcript, stt.isListening]);
 
@@ -164,11 +163,14 @@ export default function App() {
   };
 
   const toggleMic = () => {
+    const now = Date.now();
+    if (now - lastToggleTime.current < 400) return;
+    lastToggleTime.current = now;
+
     if (stt.isListening) {
       stt.stopListening();
     } else {
       tts.stop();
-      baseInputRef.current = input;
       stt.startListening();
     }
   };
