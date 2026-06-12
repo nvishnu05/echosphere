@@ -138,8 +138,10 @@ app.post('/api/chat/stream', async (req, res) => {
     res.write(`data: ${JSON.stringify({ error: error.message || 'Error occurred while communicating with Gemini API.' })}\n\n`);
     res.end();
   }
-  // Auth login endpoint using Supabase REST API
-  app.post('/api/auth/login', async (req, res) => {
+});
+
+// Auth login endpoint using Supabase REST API
+app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -191,22 +193,26 @@ app.post('/api/chat/stream', async (req, res) => {
     }
   });
 
-  // Serve static files from the React frontend build
-  const frontendBuildPath = path.join(__dirname, '../../frontend/dist');
-  app.use(express.static(frontendBuildPath));
+// Serve static files from the React frontend build
+const frontendBuildPath = path.join(__dirname, '../../dist');
+app.use(express.static(frontendBuildPath));
 
-  // Fallback for Single Page App routing
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return next();
+// Fallback for Single Page App routing
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(404).send('Static assets not found. Make sure to build the frontend first.');
     }
-    res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
-      if (err) {
-        res.status(404).send('Static assets not found. Make sure to build the frontend first.');
-      }
-    });
   });
+});
 
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`[Server] Running on http://localhost:${PORT}`);
   });
+}
+
+export default app;
