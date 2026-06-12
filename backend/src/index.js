@@ -138,6 +138,57 @@ app.post('/api/chat/stream', async (req, res) => {
     res.write(`data: ${JSON.stringify({ error: error.message || 'Error occurred while communicating with Gemini API.' })}\n\n`);
     res.end();
   }
+// Auth login endpoint using Supabase REST API
+app.post('/api/auth/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ 
+      error: 'Supabase credentials are not configured on the server. Please check your backend .env file.' 
+    });
+  }
+
+  try {
+    // Query Supabase directly via its REST API (no extra npm packages needed)
+    const supabaseEndpoint = `${supabaseUrl}/rest/v1/admin_users?username=eq.${encodeURIComponent(username)}&password=eq.${encodeURIComponent(password)}&select=*`;
+    
+    const response = await fetch(supabaseEndpoint, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Supabase query failed:', errText);
+      return res.status(401).json({ 
+        error: 'Database connection failed. If you enabled Row Level Security (RLS) on Supabase, please disable RLS or ensure a SELECT policy allows read access, or use the Service Role key instead of Anon Key.' 
+      });
+    }
+
+    const data = await response.json();
+    
+    if (data && data.length > 0) {
+      // Credentials verified! Return a mock session token
+      return res.json({ success: true, token: 'session_token_echosphere_2026' });
+    } else {
+      return res.status(401).json({ error: 'Invalid username or password.' });
+    }
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(500).json({ error: 'Internal server error during authentication.' });
+  }
 });
 
 // Serve static files from the React frontend build

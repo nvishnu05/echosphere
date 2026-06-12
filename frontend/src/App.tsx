@@ -14,6 +14,7 @@ import type { ChatSession } from './components/Sidebar';
 import { VoiceWaveform } from './components/VoiceWaveform';
 import { useSpeechToText } from './hooks/useSpeechToText';
 import { useTextToSpeech } from './hooks/useTextToSpeech';
+import { Login } from './components/Login';
 
 const STARTER_PROMPTS = [
   { icon: '🌟', text: 'Explain dark matter in simple words.' },
@@ -23,6 +24,7 @@ const STARTER_PROMPTS = [
 ];
 
 export default function App() {
+  const [isAuthorized, setIsAuthorized] = useState(() => !!localStorage.getItem('echosphere-auth-token'));
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string>('');
   const [input, setInput] = useState('');
@@ -40,6 +42,23 @@ export default function App() {
   // Initialize Speech hooks
   const tts = useTextToSpeech(isVoiceEnabled);
   const stt = useSpeechToText();
+
+  const handleLoginSuccess = (token: string) => {
+    localStorage.setItem('echosphere-auth-token', token);
+    setIsAuthorized(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('echosphere-auth-token');
+    setIsAuthorized(false);
+    tts.stop();
+    stt.stopListening();
+  };
+
+  // Auth gate check
+  if (!isAuthorized) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   // Check backend configuration status on load
   const checkBackendStatus = async () => {
@@ -374,6 +393,7 @@ export default function App() {
           customApiKey={customApiKey}
           onSaveCustomApiKey={handleSaveCustomApiKey}
           backendConfigured={backendConfigured}
+          onLogout={handleLogout}
         />
       </div>
 
@@ -394,6 +414,7 @@ export default function App() {
               customApiKey={customApiKey}
               onSaveCustomApiKey={handleSaveCustomApiKey}
               backendConfigured={backendConfigured}
+              onLogout={handleLogout}
             />
           </div>
           <div className="flex-1" onClick={() => setShowMobileSidebar(false)} />

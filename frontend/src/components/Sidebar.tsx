@@ -25,6 +25,7 @@ interface SidebarProps {
   customApiKey: string;
   onSaveCustomApiKey: (key: string) => void;
   backendConfigured: boolean;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -39,7 +40,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectVoice,
   customApiKey,
   onSaveCustomApiKey,
-  backendConfigured
+  backendConfigured,
+  onLogout
 }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [keyInput, setKeyInput] = useState(customApiKey);
@@ -230,6 +232,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <p className="text-[10px] text-amber-300 leading-relaxed">
                 Provide your API key in settings or create a <code className="bg-black/40 px-1 rounded">.env</code> file in the backend to talk with Gemini.
               </p>
+            </div>
+          )}
+
+          {/* Logout option */}
+          {onLogout && (
+            <div className="pt-2 border-t border-white/5">
+              <button
+                onClick={onLogout}
+                className="w-full py-2 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5"
+              >
+                Log Out Session
+              </button>
             </div>
           )}
         </div>
