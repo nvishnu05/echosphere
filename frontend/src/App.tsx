@@ -55,10 +55,6 @@ export default function App() {
     stt.stopListening();
   };
 
-  // Auth gate check
-  if (!isAuthorized) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
 
   // Check backend configuration status on load
   const checkBackendStatus = async () => {
@@ -376,6 +372,11 @@ export default function App() {
 
   // Handle errors from speech hooks
   const speechError = stt.error;
+
+  // Auth gate check
+  if (!isAuthorized) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <div className="flex w-full h-full bg-[#08070b] overflow-hidden text-zinc-100">
