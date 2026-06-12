@@ -11,18 +11,8 @@ export const VoiceWaveform: React.FC<VoiceWaveformProps> = ({ state }) => {
     let intervalId: any;
 
     if (state === 'idle') {
-      // Gentle breathing wave
-      let step = 0;
-      intervalId = setInterval(() => {
-        step += 0.1;
-        setBarHeights(
-          Array.from({ length: 10 }, (_, i) => {
-            const offset = i * 0.4;
-            const height = 12 + Math.sin(step + offset) * 6;
-            return Math.max(4, height);
-          })
-        );
-      }, 50);
+      // Static flat bars when idle (no movement)
+      setBarHeights(Array.from({ length: 10 }, () => 6));
     } else if (state === 'listening') {
       // Dynamic, fast dancing soundwave (User talking)
       intervalId = setInterval(() => {
