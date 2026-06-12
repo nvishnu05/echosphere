@@ -44,12 +44,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [keyInput, setKeyInput] = useState(customApiKey);
   const [keySaved, setKeySaved] = useState(false);
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
 
   const handleSaveKey = (e: React.FormEvent) => {
     e.preventDefault();
     onSaveCustomApiKey(keyInput.trim());
     setKeySaved(true);
     setTimeout(() => setKeySaved(false), 2000);
+  };
+
+  const handlePlayPreview = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+
+      if (isPlayingPreview) {
+        setIsPlayingPreview(false);
+        return;
+      }
+
+      const activeVoice = voices.find(v => v.name === selectedVoiceName);
+      if (!activeVoice) return;
+
+      const utterance = new SpeechSynthesisUtterance("Hello! This is a preview of my voice assistant.");
+      utterance.voice = activeVoice;
+      
+      utterance.onstart = () => setIsPlayingPreview(true);
+      utterance.onend = () => setIsPlayingPreview(false);
+      utterance.onerror = () => setIsPlayingPreview(false);
+
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleVoiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onSelectVoice(e.target.value);
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsPlayingPreview(false);
+  };
+
+  const handleCloseSettings = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsPlayingPreview(false);
+    setShowSettings(false);
   };
 
   return (
@@ -70,7 +110,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
         
         <button 
-          onClick={() => setShowSettings(!showSettings)}
+          onClick={() => {
+            if (showSettings) {
+              handleCloseSettings();
+            } else {
+              setShowSettings(true);
+            }
+          }}
           className={`p-2 rounded-lg transition-colors ${showSettings ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-white'}`}
           title="Voice & API Settings"
         >
@@ -84,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Settings</h3>
             <button 
-              onClick={() => setShowSettings(false)}
+              onClick={handleCloseSettings}
               className="text-zinc-500 hover:text-white p-1 rounded-md"
             >
               <X size={14} />
@@ -140,17 +186,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {voices.length === 0 ? (
               <p className="text-xs text-zinc-600 italic">No voices available in browser</p>
             ) : (
-              <select
-                value={selectedVoiceName}
-                onChange={(e) => onSelectVoice(e.target.value)}
-                className="w-full text-xs p-1.5 bg-zinc-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              >
-                {voices.map((voice) => (
-                  <option key={voice.name} value={voice.name}>
-                    {voice.name} ({voice.lang})
-                  </option>
-                ))}
-              </select>
+              <div className="space-y-2">
+                <select
+                  value={selectedVoiceName}
+                  onChange={handleVoiceChange}
+                  className="w-full text-xs p-1.5 bg-zinc-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                >
+                  {voices.map((voice) => (
+                    <option key={voice.name} value={voice.name}>
+                      {voice.name} ({voice.lang})
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={handlePlayPreview}
+                  className={`w-full py-1.5 px-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    isPlayingPreview
+                      ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
+                      : 'bg-indigo-650/15 border-indigo-500/20 text-indigo-400 hover:bg-indigo-600 hover:text-white'
+                  }`}
+                >
+                  {isPlayingPreview ? (
+                    <>
+                      <X size={12} />
+                      Stop Preview
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 size={12} />
+                      Test Voice
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </div>
 
